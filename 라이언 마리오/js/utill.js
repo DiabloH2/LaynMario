@@ -28,17 +28,18 @@ function update() {
 			} // 상
 
       if (keyPressed[32]){
-        lyan.goY -= 5;
+        lyan.goY -= 10;
         press=true;
       } // 스페이스
 }
 
-funtion gravity(){
-
-  if(lyan.goY!=386){
-      lyan.goY-=1;
+function gravity(){
+  if( lyan.goY <= 386 ){
+      lyan.goY += 3;
   }
 }
+
+
 function draw_map(){
   ctx.beginPath();
   ctx.drawImage(background, 0, 0, 1000, 500);
