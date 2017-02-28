@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+
+  <style media="screen">
+    body{overflow: hidden;}<!--바디 내 스크롤바를 없애줌-->
+  </style>
+
+  <script type="text/javascript" src="../js/utill.js"></script>
+  <script type="text/javascript">
+    var keyPressed = [];
+    var canvas;
+    var ctx;
+    window.onload = function(){
+      canvas = document.getElementById('canvas');
+      if(canvas==null||canvas.getContext==null)
+      return;
+      ctx = canvas.getContext("2d");
+      draw_map();
+      draw_character();
+
+
+
+    }
+
+  window.onkeydown = function(e)
+  {	keyPressed[e.keyCode] = true;}
+
+  window.onkeyup = function(e)
+  {	keyPressed[e.keyCode] = false;}
+
+  setInterval(realtime, 20);
+
+
+  </script>
+
+</head>
+<body>
+
+
+<canvas id="canvas" width="2000" height="2000"></canvas>
+
+</body>
+</html>
