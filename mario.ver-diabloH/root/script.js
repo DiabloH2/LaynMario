@@ -47,7 +47,7 @@ function wallDest(){
 
   if( (lyan.lyanX >= map.wall1[0]-(lyan.width/2) && lyan.lyanX <= map.wall1[1]-(lyan.width/2) ) && lyan.lyanY <= map.wall1[2]+35 ){
     lyan.jumpControl = false;
-    console.log("충돌");
+    console.log("꽝꽝");
   }else if( (lyan.lyanX >= map.wall2[0]-(lyan.width/2) && lyan.lyanX <= map.wall2[1]-(lyan.width/2) ) && lyan.lyanY <= map.wall2[2]+35   ){
     lyan.jumpControl = false;
     console.log("충돌");
