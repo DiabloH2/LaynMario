@@ -2,74 +2,111 @@ var lyanImg = new Image();
 lyanImg.src = "./img/lyan.png";
 var backImg = new Image();
 backImg.src = "./img/background.png";
-
+var wImg = new Image();
+wImg.src = "./img/wall.jpg";
 
 
 var lyan = {
   life : 99
 , img : lyanImg
 , lyanX : 50
-, lyanY : 331
-, width : 70
-, height : 90
+, lyanY : 370
+, width : 50
+, height : 60
 , jumpControl : true
+, rightMoving : true
+, leftMoving : true
 , jumpOn : false
 , jump : function(){
     if(this.jumpControl){
       this.jumpOn=true;
-      this.lyanY-=8;
+      this.lyanY-=5;
     }
   }
 }
 
 
-var map = {
-   wall1 : [370,540,284] // 가로 가로 세로
-,  wall2 : [438,473,149]
-,  trap1 : [165,250,106]
+
+var walls = [];
+
+function MakeWall(length, ptrn, x, y){
+//var baseLength = length;
+  var chk = length;
+  var patterns = ptrn; // true 일때 세로 false 일때 가로
+  var baseSize = 35;  // 벽돌의 width, height의 기본 값
+  var baseX = x;
+  var baseY = y;
+
+  var sizeXplus = 0;
+  var sizeYplus = 0;
+
+  while(chk>0){
+    var wall = {
+      pattern : patterns,               // true = 세로,  false = 가로
+      leftX   : baseX+sizeXplus,        // 좌측상단의 x축
+      rightX  : baseX+baseSize+sizeXplus, // 우측 상단 x축
+      downY   : baseY+sizeYplus,        // 상단 y축        100
+      onY     : baseY+sizeYplus-baseSize, // 하단 y축    65
+      dest    : false,
+      img     : wImg        // 기본 벽돌 이미지
+
+      //  size    : baseSize,   // 벽돌 기본 크기
+      //  length  : baseLength, // 벽돌을 몇칸 생성하는가
+      //  rightX  : baseX+(ptrn?baseSize:baseSize*length), // 우측 상단 x축
+    }
+
+    if(ptrn){
+      sizeYplus -= 35;
+    }else{
+      sizeXplus += 35;
+    }
+    walls.push(wall);
+    chk--;
+  } // while END
 }
 
 
+//MakeWall(10,false,300,200);
+
+MakeWall(5,false,450,400);
+MakeWall(5,true,250,300);
 
 
+function wall_walking(){
+  for(var i=0; i<walls.length; i++){
+      if( (lyan.lyanX >= walls[i].leftX-(lyan.width/2) && lyan.lyanX+(lyan.width/2) <= walls[i].rightX)
+       && (lyan.lyanY+lyan.height >= walls[i].onY && lyan.lyanY+lyan.height <= walls[i].onY+5 ) ){
+      lyan.jumpOn = false;
+      lyan.jumpControl = true;
+    }else if(lyan.lyanX+lyan.width > walls[i].leftX &&
+      lyan.lyanY >= walls[i].onY &&
+      lyan.lyanY <= walls[i].downY){
+      lyan.rightMoving=false;
+      console.log("오른쪽으로 갈 수 없음");
+      return false;
+    }else{
+      lyan.rightMoving=true;
+    }
 
-function wall(){
-  if( (lyan.lyanX >= map.wall1[0]-(lyan.width/2) && lyan.lyanX <= map.wall1[1]-(lyan.width/2) ) && (lyan.lyanY <= map.wall1[2]-lyan.height && lyan.lyanY >= map.wall1[2]-lyan.height-5) ){
-    lyan.jumpOn = false;
-  }else if( (lyan.lyanX >= map.wall2[0]-(lyan.width/2) && lyan.lyanX <= map.wall2[1]-(lyan.width/2) ) && (lyan.lyanY <= map.wall2[2]-lyan.height && lyan.lyanY >= map.wall2[2]-lyan.height-5) ){
-    lyan.jumpOn = false;
-  }else{
-    lyan.jumpOn = true;
+
   }
 }
-
-function wallDest(){
-
-  if( (lyan.lyanX >= map.wall1[0]-(lyan.width/2) && lyan.lyanX <= map.wall1[1]-(lyan.width/2) ) && lyan.lyanY <= map.wall1[2]+35 ){
-    lyan.jumpControl = false;
-    console.log("꽝꽝");
-  }else if( (lyan.lyanX >= map.wall2[0]-(lyan.width/2) && lyan.lyanX <= map.wall2[1]-(lyan.width/2) ) && lyan.lyanY <= map.wall2[2]+35   ){
-    lyan.jumpControl = false;
-    console.log("충돌");
-  }
-}
-
-// function trap(){
-//   if( (lyan.lyanX >= map.trap1[0]-(lyan.width/2) && lyan.lyanX <= map.trap1[1]-(lyan.width/2) ) &&  ( lyan.lyanY >= 315 && lyan.lyanY <= 320 ) ){
-//
-//
-//
-//   }
+// &&Iscollision(walls[i],lyan)
+// function Iscollision(wall,lyan){
+//   return wall.leftX<lyan.lyanX+lyan.width &&
+//   lyan.lyanX<wall.rightX &&
+//   wall.onY&&lyan.lyanY+lyan.height&&
+//   wall.downY&&lyan.lyanY;
 // }
 
 
 function realtime(){
-    rsetJump();
-    wallDest();
-    wall();
     jumpDown();
+    wall_walking();
     update();
-		draw_background();
+    rsetJump();
+	  draw_background();
+    draw_wall();
 		draw_player();
 
 }
@@ -79,7 +116,7 @@ function realtime(){
 
 function jumpDown(){
   if(lyan.jumpOn == true){
-    if(lyan.lyanY <= 332){
+    if(lyan.lyanY <= 360){
       lyan.lyanY +=3;
       console.log("조정중");
     }
@@ -87,16 +124,22 @@ function jumpDown(){
 }
 
 function rsetJump(){
-  if(lyan.lyanY <= 332){
+  if(lyan.lyanY <= 360){
     lyan.jumpControl = true;
   }
 }
 
-
+function draw_wall() {
+  for(var i=0; i<walls.length; i++){
+    ctx.beginPath();
+    ctx.drawImage(walls[i].img, walls[i].leftX, walls[i].onY, 35,35);
+    ctx.stroke();
+  }
+}
 
 
 function draw_background() {
-	//ctx.clearRect(0, 0, canvas.width, canvas.height); // 캔버스를 깔끔한 상태로 유지보수
+	ctx.clearRect(0, 0, canvas.width, canvas.height); // 캔버스를 깔끔한 상태로 유지보수
 	ctx.beginPath();
 	ctx.drawImage(backImg, 0, 0,820,482);
 	ctx.stroke();
@@ -110,17 +153,22 @@ function draw_player() {
 
 function update() {
       var press = false;
-      if (keyPressed[39]){
-        lyan.lyanX += 5;	press = true;
-      } // 좌
 
-      if (keyPressed[37]){
-        lyan.lyanX -= 5;	press = true;
-      } // 우
+      if(lyan.rightMoving){
+        if (keyPressed[39]){
+          lyan.lyanX += 5;	press = true;
+        } // 우
+      }
+
+      if(lyan.leftMoving){
+        if (keyPressed[37]){
+          lyan.lyanX -= 5;	press = true;
+        } // 좌
+      }
 
       if (keyPressed[32]){
         lyan.jump();
-      }else if(lyan.lyanY>=331){
+      }else if(lyan.lyanY>=481){
         lyan.jumpOn = false;
       } // 점프
 }
